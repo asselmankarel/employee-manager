@@ -4,7 +4,7 @@
 
 #include "common.h"
 #include "file.h"
-// #include "parse.h"
+#include "parse.h"
 
 void print_usage(char *argv[]) {
   printf("Usage: program [-n] -f <filepath>\n");
@@ -18,6 +18,7 @@ int main(int argc, char *argv[]) {
   char *filepath = NULL;
   bool new_file = false;
   int db_file_descriptor = -1;
+  struct dbheader_t *db_header_ptr = NULL;
   int c;
   
   while ((c = getopt(argc, argv, "nf:")) != -1 ){
@@ -48,18 +49,34 @@ int main(int argc, char *argv[]) {
       printf("Failed to create new file: %s\n", filepath);
 
       return STATUS_ERROR;
-    } else {
+    }
+
+    if (create_db_header(db_file_descriptor, &db_header_ptr) == STATUS_ERROR)
+    {
+      printf("Failed to create DB header for file: %s\n", filepath);
+
+      return STATUS_ERROR;
+    }
+  } else {
       db_file_descriptor = open_db_file(filepath);
       if (db_file_descriptor == STATUS_ERROR) {
         printf("Failed to open file: %s\n", filepath);
 
         return STATUS_ERROR;
       }
-    }
+
+      if (validate_db_header(db_file_descriptor, &db_header_ptr) == STATUS_ERROR) {
+        printf("Failed to validate DB header for file: %s\n", filepath);
+
+        return STATUS_ERROR;
+      }
   }
+  
 
   printf("New file: %d\n", new_file);
   printf("File path: %s\n", filepath);
+  
+  output_file(db_file_descriptor, db_header_ptr);
 
   return 0;
 }
