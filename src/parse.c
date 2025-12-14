@@ -10,15 +10,29 @@
 #include "parse.h"
 #include "common.h"
 
-int add_employee(struct dbheader_t *header, struct employee_t *employees, char *addstring) {
-  printf("Adding employee: %s\n", addstring);
+int add_employee(struct dbheader_t *header, struct employee_t **employees, char *addstring) {
+  if (addstring == NULL || *employees == NULL || header == NULL) return STATUS_ERROR;
+
   char *name = strtok(addstring, ",");
   char *address = strtok(NULL, ",");
   char *hours = strtok(NULL, ",");
+  
+  if (name == NULL || address == NULL || hours == NULL) return STATUS_ERROR;
+  
+  struct employee_t *e = *employees;
+  e = realloc(e, sizeof(struct employee_t) * header->count+1);
+  if (e == NULL) {
+    printf("Failed to allocate memory for new employee\n");
+    return STATUS_ERROR;
+  }
+  
+  header->count++;
 
-  strncpy(employees[header->count - 1].name, name, sizeof(employees[header->count - 1].name));
-  strncpy(employees[header->count - 1].address, address, sizeof(employees[header->count - 1].address));
-  employees[header->count - 1].hours = atoi(hours); 
+  strncpy(e[header->count - 1].name, name, sizeof(e[header->count - 1].name)-1); // -1 to leave space for null terminator
+  strncpy(e[header->count - 1].address, address, sizeof(e[header->count - 1].address)-1);
+  e[header->count - 1].hours = atoi(hours); 
+
+  *employees = e;
 
   return STATUS_SUCCESS;
 }
