@@ -18,12 +18,13 @@ int main(int argc, char *argv[]) {
   char *filepath = NULL;
   char *addstring = NULL;
   bool new_file = false;
+  bool list = false;
   int db_file_descriptor = -1;
   struct dbheader_t *db_header_ptr = NULL;
   struct employee_t *employees = NULL;
   int c;
   
-  while ((c = getopt(argc, argv, "nf:a:")) != -1 ){
+  while ((c = getopt(argc, argv, "nf:a:l")) != -1 ){
     switch (c) {
       case 'n':
         new_file = true;
@@ -36,6 +37,9 @@ int main(int argc, char *argv[]) {
         break; 
       case 'a':
         addstring = optarg;
+        break;
+      case 'l':
+        list = true;
         break;
       default:
         return -1;
@@ -85,6 +89,10 @@ int main(int argc, char *argv[]) {
 
   if (addstring) {
     add_employee(db_header_ptr, &employees, addstring);
+  }
+
+  if (list) {
+    list_employees(db_header_ptr, employees);
   }
 
   printf("New file: %d\n", new_file);

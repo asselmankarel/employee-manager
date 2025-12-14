@@ -11,6 +11,19 @@
 #include "parse.h"
 #include "common.h"
 
+void list_employees(struct dbheader_t *header, struct employee_t *employees) {
+  if (header == NULL || employees == NULL) return;
+
+  int i = 0;
+  printf("Employee List (Total: %d):\n", header->count);
+  for (i = 0; i < header->count; i++) {
+    printf("Employee %d:\n", i);
+    printf("\tName: %s\n", employees[i].name);
+    printf("\tAddress: %s\n", employees[i].address);
+    printf("\tHours Worked: %u\n", employees[i].hours);
+  }
+}
+
 int add_employee(struct dbheader_t *header, struct employee_t **employees, char *addstring) {
   if (addstring == NULL || *employees == NULL || header == NULL) return STATUS_ERROR;
 
