@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -20,7 +21,7 @@ int add_employee(struct dbheader_t *header, struct employee_t **employees, char 
   if (name == NULL || address == NULL || hours == NULL) return STATUS_ERROR;
   
   struct employee_t *e = *employees;
-  e = realloc(e, sizeof(struct employee_t) * header->count+1);
+  e = realloc(e, sizeof(struct dbheader_t) + sizeof(struct employee_t) * (header->count+1));
   if (e == NULL) {
     printf("Failed to allocate memory for new employee\n");
     return STATUS_ERROR;
@@ -139,7 +140,7 @@ void output_file(int fd, struct dbheader_t *header, struct employee_t *employees
   header->filesize = htonl(sizeof(struct dbheader_t) + actualcount * sizeof(struct employee_t));
   
   lseek(fd, 0, SEEK_SET); // Move to the beginning of the file
-  write(fd, header, sizeof(struct dbheader_t)) != sizeof(struct dbheader_t);
+  write(fd, header, sizeof(struct dbheader_t));
 
   int i = 0;
   for (i = 0; i < actualcount; i++) {
