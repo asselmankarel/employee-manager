@@ -1,5 +1,5 @@
 # Employee manager
 
  - file based
- - cli
+ - cli tool
  - written in c 
